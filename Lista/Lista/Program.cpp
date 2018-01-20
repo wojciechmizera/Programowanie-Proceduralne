@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
 
 	for (int i = 0; i < 20; i++)
 	{
-		ListInfoPtr x = (ListInfoPtr)malloc(sizeof(ListInfo));
+		LISTINFO* x = (LISTINFO*)malloc(sizeof(ListInfo));
 		x->nKey = i + 7;
 		InsertFront(pList, x);
 	}
@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
 
 
 	printf("\n");
-	ListInfoPtr x = (ListInfoPtr)malloc(sizeof(ListInfo));
+	LISTINFO* x = (LISTINFO*)malloc(sizeof(ListInfo));
 	x->nKey = 14;
 	ListItem* pPrev = NULL;
 
@@ -75,13 +75,13 @@ void PrintList(ListItem* pList)
 }
 
 
-// Classic comparer used for sorting purposes
+// Comparer used for sorting purposes
 // To introduce some type control void* pointers could be replaced by LISTINFO*
 int Compare(const void* pFirst, const void* pNext)
 {
-	if (((ListInfoPtr)pFirst)->nKey > ((ListInfoPtr)pNext)->nKey)
+	if (((LISTINFO*)pFirst)->nKey > ((LISTINFO*)pNext)->nKey)
 		return 1;
-	if (((ListInfoPtr)pFirst)->nKey == ((ListInfoPtr)pNext)->nKey)
+	if (((LISTINFO*)pFirst)->nKey == ((LISTINFO*)pNext)->nKey)
 		return 0;
 	return -1;
 }

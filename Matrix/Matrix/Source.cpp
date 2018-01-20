@@ -63,18 +63,15 @@ void Transpose(double** matrix, int size)
 {
 	double** helper = matrix;
 
-	for (int i = 0; i < size; i++)
+	for (int i = 0; i < size-1; i++)
 	{
-		double* pointer = *helper++;
-		for (int j = 0; j < size; j++)
+		double* pointer = *helper++ + i+1;
+		for (int j = i; j < size; j++)
 		{
 			// First move the pointer outside the main diagonal, then start swapping
-			if (j > i)
-			{
 				double x = matrix[j][i];
 				matrix[j][i] = *pointer;
 				*pointer = x;
-			}
 			*pointer++;
 		}
 	}
@@ -209,12 +206,14 @@ void ComplementMatrix(double** matrix, double** complement, int size)
 	}
 
 	// Imitate pow(-1, i+j)
-	int multiplier = 1;
+	//int multiplier = 1;
 
 	double** helper = complement;
 
 	for (int row = 0; row < size; row++)
 	{
+		int multiplier = (row%2) ? -1 : 1;
+
 		double* pointer = *helper++;
 		for (int column = 0; column < size; column++)
 		{

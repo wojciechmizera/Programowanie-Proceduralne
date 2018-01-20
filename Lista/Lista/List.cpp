@@ -28,28 +28,29 @@ int isEmpty(ListItem* pList)
 // Return the first element
 ListItem* Front(ListItem* pList)
 {
-	if (!isEmpty(pList))
-		return (pList->pNext);
-	return 0;
+	//if (!isEmpty(pList))
+		return pList->pNext;
+	//return NULL;
 }
 
 
 // Insert new element after specified segment 
-void Insert(ListItem* pAfter, ListInfoPtr pInfo)
+void Insert(ListItem* pAfter, LISTINFO* pInfo)
 {
 	ListItem* p = (ListItem*)malloc(sizeof(ListItem));
-	if (p)
+	if (!p)
 	{
-		memset(p, 0, sizeof(ListItem));
-		p->pInfo = pInfo;
-		p->pNext = pAfter->pNext;
-		pAfter->pNext = p;
+		//!!!
 	}
+	memset(p, 0, sizeof(ListItem));
+	p->pInfo = pInfo;
+	p->pNext = pAfter->pNext;
+	pAfter->pNext = p;
 }
 
 
 // Insert as the first element...
-void InsertFront(ListItem* pAfter, ListInfoPtr pInfo)
+void InsertFront(ListItem* pAfter, LISTINFO* pInfo)
 {
 	// ... and since head is the first element...
 	Insert(pAfter, pInfo);
@@ -86,21 +87,23 @@ void RemoveFront(ListItem* pAfter)
 ListItem* Find(ListItem* pList, const void* x, ListItem** pPrev, int(__cdecl *Comparer)(const void*, const void*))
 {
 	// Set pointer on the first element
-	*pPrev = pList->pNext;
-
+	*pPrev = pList;
+	ListItem* v = pList->pNext;
 	// Untill *pPrev == NULL
-	while (*pPrev)
+	while (v)
 	{
 		// If the next element is what we are seeking, return it
-		if (!Comparer(x, (*pPrev)->pNext->pInfo))
-			return (*pPrev)->pNext;
+		if (!Comparer(x, (v->pInfo)))
+			return v;
 
 		// Else check the next one
-		(*pPrev) = (*pPrev)->pNext;
+		*pPrev = v;
+
+		v = v->pNext;
 	}
 
 	// If element not found, return NULL
-	return *pPrev;
+	return *pPrev=NULL;
 }
 
 
@@ -111,14 +114,16 @@ void FreeList(ListItem* pList)
 	ListItem* jumper;
 
 	while (!isEmpty(pList))
-	{
-		// Set the first element to the second element
-		jumper = pList->pNext;
-		pList->pNext = jumper->pNext;
+		{
+		//	// Set the first element to the second element
+		//	jumper = pList->pNext;
+		//	pList->pNext = jumper->pNext;
 
-		// Free the ferst element
-		free(jumper->pInfo);
-		free(jumper);
+		//	// Free the ferst element
+		//	free(jumper->pInfo);
+		//	free(jumper);
+
+		RemoveFront(pList);
 	}
 }
 
