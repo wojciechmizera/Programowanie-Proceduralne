@@ -28,9 +28,7 @@ int isEmpty(ListItem* pList)
 // Return the first element
 ListItem* Front(ListItem* pList)
 {
-	//if (!isEmpty(pList))
-		return pList->pNext;
-	//return NULL;
+	return pList->pNext;
 }
 
 
@@ -40,7 +38,8 @@ void Insert(ListItem* pAfter, LISTINFO* pInfo)
 	ListItem* p = (ListItem*)malloc(sizeof(ListItem));
 	if (!p)
 	{
-		//!!!
+		printf("Error<Insetr()>:Memory for object not allocated\n");
+		return;
 	}
 	memset(p, 0, sizeof(ListItem));
 	p->pInfo = pInfo;
@@ -114,17 +113,7 @@ void FreeList(ListItem* pList)
 	ListItem* jumper;
 
 	while (!isEmpty(pList))
-		{
-		//	// Set the first element to the second element
-		//	jumper = pList->pNext;
-		//	pList->pNext = jumper->pNext;
-
-		//	// Free the ferst element
-		//	free(jumper->pInfo);
-		//	free(jumper);
-
 		RemoveFront(pList);
-	}
 }
 
 

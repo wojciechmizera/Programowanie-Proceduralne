@@ -2,12 +2,37 @@
 
 #define DEBUG_PRINT
 
+#pragma region Private Interface
+
+// Utility helpers
+void CopyTable(int* pattern, int** destination, int size);
+
+
+// HeapSort helpers
+void Update(int* table, int size, int l);
+
+
+// MergeSort helpers
+void Merge(int* table, int start, int mid, int end);
+
+
+// MergeSortIter helpers
+bool Copy(int* tab, int* temp, int nSize, int* i, int* ix);
+void CopySerie(int* tab, int* temp, int nSize, int* i, int* ix);
+
+
+// Recursive algorithms
+void QSort(int*table, int left, int right);
+void MrgSort(int* table, int left, int right);
+
+#pragma endregion
+
+
 #pragma region Utilites
 
 // Copies a chunk of memory representing a table of integers
 void CopyTable(int* pattern, int** destination, int size)
 {
-	*destination = (int*)malloc(size * sizeof(int));
 	memcpy(*destination, pattern, sizeof(int) * size);
 }
 
@@ -39,21 +64,17 @@ void CreateTable(int size, int** table)
 
 
 // A function testing sorting algorithms
-void Timer(void(*function[])(int* table, int size), int fSize, int* table, int tSize, char* names[])
+void Timer(Delegate func, int fSize, int* table, int tSize, const char* names[])
 {
-	// Auxiliary table
-	int* dummy = NULL;
+	int* dummy = (int*)malloc(tSize * sizeof(int));
 
 	for (int i = 0; i < fSize; i++)
 	{
-		// Copy the table, so every algorithm has to deal with the same object
 		CopyTable(table, &dummy, tSize);
 
-		// Check time and sort the table
+		// Sort copy of the table with time check
 		time_t start = clock();
-		function[i](dummy, tSize);
-
-		// Calculate the time difference in miliseconds and convert it to seconds
+		func[i](dummy, tSize);
 		time_t stop = clock();
 		double time = (double)(stop - start) / CLOCKS_PER_SEC;
 
@@ -68,6 +89,7 @@ void Timer(void(*function[])(int* table, int size), int fSize, int* table, int t
 		printf("\n\n");
 #endif
 	}
+	free(dummy);
 }
 
 #pragma endregion
@@ -75,7 +97,15 @@ void Timer(void(*function[])(int* table, int size), int fSize, int* table, int t
 
 #pragma region Sorting algorithms 
 
-void InsertionSort(int* table, int size)		// ok
+void MergeSort(int* table, int size)		
+{ MrgSort(table, 0, size -1); }
+
+
+void QuickSort(int* table, int size)
+{ QSort(table, 0, size - 1); }
+
+
+void InsertionSort(int* table, int size)
 {
 	for (int i = 1; i < size; i++)
 	{
@@ -88,7 +118,8 @@ void InsertionSort(int* table, int size)		// ok
 	}
 }
 
-void SelectionSort(int* table, int size)		// ok
+
+void SelectionSort(int* table, int size)
 {
 	for (int i = 0; i < size - 1; i++)
 	{
@@ -106,7 +137,8 @@ void SelectionSort(int* table, int size)		// ok
 	}
 }
 
-void HalfSort(int* table, int size)				// ok
+
+void HalfSort(int* table, int size)
 {
 	for (int i = 1; i < size; i++)
 	{
@@ -128,11 +160,13 @@ void HalfSort(int* table, int size)				// ok
 	}
 }
 
-void ShakeSort(int* table, int size)			// ok
+
+void ShakeSort(int* table, int size)
 {
 	int bottom = 0;
 	int top = size - 1;
 	int temp;
+	int lastSwap;
 
 	while (bottom < top)
 	{
@@ -142,9 +176,10 @@ void ShakeSort(int* table, int size)			// ok
 				temp = table[i];
 				table[i] = table[i + 1];
 				table[i + 1] = temp;
+				lastSwap = i;
 			}
 
-		top--;
+		top = lastSwap;
 
 		for (int i = top; i > bottom; i--)
 			if (table[i] < table[i - 1])
@@ -152,15 +187,16 @@ void ShakeSort(int* table, int size)			// ok
 				temp = table[i];
 				table[i] = table[i - 1];
 				table[i - 1] = temp;
+				lastSwap = i;
 			}
 
-		bottom++;
+		bottom = lastSwap;
 	}
 }
 
-// QuickSort, name changed for invoking function
+
 void QSort(int*table, int left, int right)
-{													// ok
+{
 	int i = left;
 	int j = right;
 
@@ -184,10 +220,8 @@ void QSort(int*table, int left, int right)
 }
 
 
-// MergeSort, name changed for invoking function
-void MrgSort(int* table, int left, int right)		// ok
+void MrgSort(int* table, int left, int right)
 {
-	// i.e. till size of table == 1
 	if (left != right)
 	{
 		int mid = (left + right) / 2;
@@ -197,223 +231,147 @@ void MrgSort(int* table, int left, int right)		// ok
 	}
 }
 
-void Merge(int* table, int start, int mid, int end)
+
+void Merge(int* table, int left, int mid, int right)
 {
-	int* temp = (int*)malloc((end - start + 1) * sizeof(int));
-	memset(temp, 0, (end - start + 1) * sizeof(int));
+	int* t = (int*)malloc((right - left + 1) * sizeof(int));
+	memcpy(t, table + left, (right - left + 1) * sizeof(int));
 
-	int i = start;
-	int j = mid + 1;
-	int k = 0;
+	int i = 0;
+	int j = mid - left + 1;
 
-	// Copy both series into one table
-	while (i <= mid && j <= end)
+	int q = left;
+
+	while (i <= mid - left && j <= right - left)
 	{
-		if (table[j] < table[i])
-			temp[k] = table[j++];
-
+		if (t[i]<t[j])
+			table[q++] = t[i++];
 		else
-			temp[k] = table[i++];
-
-		k++;
+			table[q++] = t[j++];
 	}
 
-	// Return elements from temporary to original table
-	if (i <= mid)
-		while (i <= mid)
-			temp[k++] = table[i++];
-	else
-		while (j <= end)
-			temp[k++] = table[j++];
+	while (i <= mid - left) table[q++] = t[i++];
 
-	// Copy the remaining elements
-	for (i = 0; i <= end - start; i++)
-		table[start + i] = temp[i];
-
-	free(temp);
-
+	free(t);
 }
 
 
-void MergeSortIter(int* table, int size)
+// Inefficient algorithm from Nicolaus Wirth's book
+void MergeSortS(int* table, int nSize)
 {
-	int* temp = (int*)malloc(size * sizeof(int));
-	memset(temp, 0, size * sizeof(int));
-
-	for (int k = 1; k < size; k *= 2)
+	int* temp1 = (int*)calloc(nSize, sizeof(int));
+	int* temp2 = (int*)calloc(nSize, sizeof(int));
+	int serie;
+	do
 	{
-		for (int left = 0; left + k < size; left += k * 2)
+		int i = 0;
+		int j = 0;
+		int k = 0;
+		while (i < nSize)
 		{
-			int right = left + k;
-			int rend = right + k;
-			if (rend > size)
-				rend = size;
-
-			int m = left;
-			int i = left;
-			int j = right;
-
-			// Copy serie
-			while (i < right && j < rend)
-			{
-				if (table[i] <= table[j])
-					temp[m] = table[i++];
-				else
-					temp[m] = table[j++];
-
-				m++;
-			}
-
-			// Copy back
-			while (i < right)
-				temp[m++] = table[i++];
-
-			while (j < rend)
-				temp[m++] = table[j++];
-
-			// Recopy remaining elements
-			for (m = left; m < rend; m++)
-				table[m] = temp[m];
+			while ((i < nSize - 1) && (table[i] <= table[i + 1]))
+				temp1[j++] = table[i++];
+			if (i < nSize)
+				temp1[j++] = table[i++];
+			while ((i < nSize - 1) && (table[i] < table[i + 1]))
+				temp2[k++] = table[i++];
+			if (i < nSize)
+				temp2[k++] = table[i++];
 		}
-	}
-	free(temp);
+
+		int end1 = j;
+		int end2 = k;
+		serie = 0;
+		i = j = k = 0;
+		while ((j < end1) && (k < end2))
+		{
+			bool end = false;
+			while (!end)
+			{
+				if (temp1[j] <= temp2[k])
+				{
+					end = Copy(table, temp1, end1, &i, &j);
+					if (end)
+						CopySerie(table, temp2, end2, &i, &k);
+				}
+				else
+				{
+					end = Copy(table, temp2, end2, &i, &k);
+					if (end)
+						CopySerie(table, temp1, end1, &i, &j);
+				}
+			}
+			serie++;
+		}
+		while (j < end1)
+		{
+			CopySerie(table, temp1, end1, &i, &j);
+			serie++;
+		}
+		while (k < end2)
+		{
+			CopySerie(table, temp2, end2, &i, &k);
+			serie++;
+		}
+	} while (serie > 1);
+
+	free(temp1);
+	free(temp2);
 }
 
 
-void HeapSort(int* table, int size)					// ok
+void CopySerie(int* table, int* temp, int size, int* i, int* ix)
 {
-	int right = size;
-	Heapify(table, size);
-
-	while (right > 1)
+	bool end = false;
+	do
 	{
-		// Swap the Zero and Right element
+		end = Copy(table, temp, size, i, ix);
+	} while (!end);
+}
+
+
+bool Copy(int* table, int* temp, int size, int* i, int* ix)
+{
+	table[(*i)++] = temp[(*ix)++];
+	if (*ix == size)
+		return true;
+	return (temp[*ix - 1] > temp[*ix]);
+}
+
+
+void HeapSort(int* table, int size)
+{
+	for(int i = size/2; i >= 0; i--)
+		Update(table, i, size);
+
+	for(int i = size - 1; i > 0; i--)
+	{
 		int swap = *table;
-		*table = table[--right];
-		table[right] = swap;
+		*table = table[i];
+		table[i] = swap;
 
-		Sift(table, right, 0);
+		Update(table, 0, i);
 	}
 }
 
 
-void Sift(int* table, int size, int l)
+void Update(int* table, int left, int right)
 {
-	int j = 2 * l + 1;
-	int x = table[l];
-	while (j < size)
+	int j = 2 * left + 1;
+	int x = table[left];
+	while (j < right)
 	{
-		if (j < size - 1)
+		if (j < right - 1)
 			if (table[j] < table[j + 1])
 				++j;
 		if (x >= table[j])
 			break;
-		table[l] = table[j];
-		l = j;
-		j = 2 * l + 1; // sift
+		table[left] = table[j];
+		left = j;
+		j = 2 * left + 1;
 	}
-	table[l] = x;
-}
-
-void Heapify(int* table, int size)
-{
-	int l = size / 2;
-	while (l)
-		Sift(table, size, --l);
+	table[left] = x;
 }
 
 #pragma endregion
 
-
-#pragma region Miscellaneous
-
-// A function testing recursive sorting algorithms
-void TimerRecursive(void(*function[])(int* table, int left, int right), int fSize, int* table, int tSize, char* names[])
-{
-	// Auxiliary table
-	int* dummy = NULL;
-
-	for (int i = 0; i < fSize; i++)
-	{
-		// Copy the table, so every algorithm has to deal with the same object
-		CopyTable(table, &dummy, tSize);
-
-		// Check time and sort the table
-		time_t start = clock();
-		function[i](dummy, 0, tSize -1);
-
-		// Calculate the time difference in miliseconds and convert it to seconds
-		time_t stop = clock();
-		double time = (double)(stop - start) / CLOCKS_PER_SEC;
-
-		// Print name of function and it's time
-		printf("%-15s %lf\n", names[i], time);
-
-		// Show a sample of sorted table
-#ifdef DEBUG_PRINT
-		printf("Sample: ");
-		for (int i = 0; i < 20; i++)
-			printf("%d, ", dummy[i]);
-		printf("\n\n");
-#endif
-
-	}
-}
-
-
-void merge(int* table, int left, int middle, int right)
-{
-	int n1 = middle - left + 1;
-	int n2 = right - middle;
-
-	// Create temp tables
-	int* Left =  (int*)calloc(n1, sizeof(int));
-	int* Right = (int*)calloc(n2, sizeof(int));
-
-	// Copy data to temp tables
-	for (int i = 0; i < n1; i++)
-		Left[i] = table[left + i];
-	for (int j = 0; j < n2; j++)
-		Right[j] = table[middle + 1 + j];
-
-	// Merge the temp arrays back into arr[l..r]
-	int i = 0; // Initial index of first subarray
-	int j = 0; // Initial index of second subarray
-	
-	while (i < n1 && j < n2)
-	{
-		if (Left[i] <= Right[j])
-			table[left] = Left[i++];
-		else
-			table[left] = Right[j++];
-
-		left++;
-	}
-
-	// Copy the remaining elements of Left, if thereare any
-	while (i < n1)
-		table[left++] = Left[i++];
-
-	// Copy the remaining elements of Right, if there are any
-	while (j < n2)
-		table[left++] = Right[j++];
-
-	free(Left);
-	free(Right);
-}
-
-
-void mergeSort(int* table, int left, int right)
-{
-	if (left < right)
-	{
-		int middle = (left + right)/2;
-
-		mergeSort(table, left, middle);
-		mergeSort(table, middle + 1, right);
-
-		merge(table, left, middle, right);
-	}
-}
-
-#pragma endregion

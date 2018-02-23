@@ -23,6 +23,3 @@ void DeleteMatrix(double*** table, int size);
 
 #endif // !_HEADER
 
-
-
-

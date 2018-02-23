@@ -1,23 +1,25 @@
-#pragma once			// TODO make sure about the pragmas
+#pragma once			
 
 #include <stdio.h>
 #include <malloc.h>
 
 namespace NullList
 {
-
-	struct Queue
+	typedef struct Qitem
 	{
-		Queue* head;
-		Queue* tail;
-		Queue* next;
-
+		Qitem* next;
 		int key;
-	};
+	} Qitem;
+
+
+	typedef struct
+	{
+		Qitem* head;
+		Qitem* tail;
+	
+	} Queue;
 
 	Queue* CreateQueue();
-
-	void ShowQueue(Queue* list);
 
 	void Enqueue(Queue* list, int element);
 	int Dequeue(Queue* list);
@@ -25,6 +27,6 @@ namespace NullList
 	void qClear(Queue* list);
 	void qRemove(Queue** list);
 
-
-
+	// Helper function, prints actual content in the queue
+	void ShowQueue(Queue* list);
 }

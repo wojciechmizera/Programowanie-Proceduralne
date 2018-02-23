@@ -20,9 +20,9 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{86967964-31A9-4153-97EF-426CC04DB3E5}</ProjectGuid>
+    <ProjectGuid>{8333E9B6-5561-4C93-8AA5-15031189AA62}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>kolejkaFIFO</RootNamespace>
+    <RootNamespace>PriorityQueue</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -145,15 +145,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="listFIFO.h" />
-    <ClInclude Include="NullList.h" />
-    <ClInclude Include="tableFIFO.h" />
+    <ClCompile Include="PriorityQueue.cpp" />
+    <ClCompile Include="PQueue.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="listFIFO.cpp" />
-    <ClCompile Include="NullList.cpp" />
-    <ClCompile Include="tableFIFO.cpp" />
-    <ClCompile Include="Program.cpp" />
+    <ClInclude Include="PQueue.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

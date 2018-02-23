@@ -20,9 +20,9 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{86967964-31A9-4153-97EF-426CC04DB3E5}</ProjectGuid>
+    <ProjectGuid>{A0AAA81C-EB73-4AFC-9779-76BBDA233E40}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>kolejkaFIFO</RootNamespace>
+    <RootNamespace>Jackpot</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -88,7 +88,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions); _CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
     </ClCompile>
@@ -145,15 +145,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="listFIFO.h" />
-    <ClInclude Include="NullList.h" />
-    <ClInclude Include="tableFIFO.h" />
+    <ClCompile Include="Data.cpp" />
+    <ClCompile Include="Jackpot.cpp" />
+    <ClCompile Include="Print.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="listFIFO.cpp" />
-    <ClCompile Include="NullList.cpp" />
-    <ClCompile Include="tableFIFO.cpp" />
-    <ClCompile Include="Program.cpp" />
+    <ClInclude Include="Data.h" />
+    <ClInclude Include="defs.h" />
+    <ClInclude Include="Print.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

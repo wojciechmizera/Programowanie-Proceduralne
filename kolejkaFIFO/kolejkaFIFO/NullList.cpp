@@ -1,7 +1,5 @@
 
 #include "NullList.h"
-#include <iostream>
-using namespace std;
 
 
 namespace NullList
@@ -11,49 +9,35 @@ namespace NullList
 	{
 		Queue* object = (Queue*)calloc(1, sizeof(Queue));
 		// If allocation was successcfull...
-		if (object)
+		if (!object)
 		{
-			object->head = object->tail = object->next = NULL;
-
-			return object;
+			printf("Error<CreateQueue()>: No memory avaliable\n");
+			return NULL;
 		}
-		printf("Error<CreateQueue()>: No memory avaliable\n");
-		return NULL;
-	}
-
-	// Prints the queue one element for a line
-	void ShowQueue(Queue * object)
-	{
-		// Create an element to run along the queue
-		Queue* runner = object->head;
-
-		while (runner != NULL)
-		{
-			printf("%d\n", runner->key);
-			runner = runner->next;
-		}
+		object->head = object->tail = NULL;
+		return object;
 	}
 
 
 	// Put an element at the end of the queue
 	void Enqueue(Queue * object, int element)
 	{
-		// Create a new object
-		Queue* _new = CreateQueue();
-
-		// If the object is empty, prepare the first element
-		if (!(object->head))
+		Qitem* item = (Qitem*)calloc(1, sizeof(Qitem));
+		if (!item)
 		{
-		object->key = element;
-		object->head = object->tail = object;
+			printf("ERROR<Enqueue()>: Not enough memory\n");
+			return;
+		}
+		item->key = element;
+
+		if (!object->head)
+		{
+			object->head = object->tail = item;
 		}
 		else
 		{
-			// If object contains something, regular add
-			object->tail->next = _new;
-			object->tail = _new;
-			object->tail->key = element;
-			_new->head = object;
+			object->tail->next = item;
+			object->tail = item;
 		}
 	}
 
@@ -61,7 +45,6 @@ namespace NullList
 	// Get the first element from the queue
 	int Dequeue(Queue * object)
 	{
-
 		// Make sure there is anything to do
 		if (qEmpty(object))
 		{
@@ -71,13 +54,11 @@ namespace NullList
 		}
 
 		int x = object->head->key;
-		Queue* q = object;
+		Qitem* q = object->head;
 		object->head = object->head->next;
+		free(q);
 
 		return x;
-
-
-
 	}
 
 
@@ -88,22 +69,36 @@ namespace NullList
 	}
 
 
-	//Clear the queue
+	// Clear the queue
 	void qClear(Queue * list)
 	{
 		while (!qEmpty(list))
 		{
 			Dequeue(list);
 		}
-		list->head = list->tail = list->next = NULL;
+		list->head = list->tail = NULL;
 	}
 
 
-	//Delete the queue from memory
+	// Delete the queue from memory
 	void qRemove(Queue ** list)
 	{
 		qClear(*list);
 		free(*list);
 		*list = NULL;
+	}
+
+
+	// Prints the queue one element for a line
+	void ShowQueue(Queue * object)
+	{
+		// Create an element to run along the queue
+		Qitem* runner = object->head;
+
+		while (runner != NULL)
+		{
+			printf("%d\n", runner->key);
+			runner = runner->next;
+		}
 	}
 }

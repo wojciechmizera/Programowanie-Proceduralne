@@ -7,62 +7,61 @@ namespace table
 	Queue* CreateQueue(int size)
 	{
 		Queue* queue = (Queue*)calloc(1, sizeof(Queue));
-		queue->table = (int*)calloc(size, sizeof(int));
-		
-		// If allocation was succesfull continue, if not return null
-		if (queue && queue->table)
-		{
-			queue->size = size;
-			queue->first = queue->table;
-			queue->last = queue->table;
-			queue->isFull = false;
 
-			return queue;
+		if (!queue)
+		{
+			printf("Error<CreateQueue()>: Memory for object not allocated\n");
+			return NULL;
 		}
-		return NULL;
+		queue->table = (int*)calloc(size, sizeof(int));
+
+		if (!(queue->table))
+		{
+			printf("ERROR<CreateQueue()>: Memory for table not allocated\n");
+			return NULL;
+		}
+
+		queue->maxSize = size;
+		queue->first = queue->last = queue->size = 0;
+
+		return queue;
 	}
 
 	// Check if there are any elements in the queue
-	int qEmpty(Queue* queue)
+	int QEmpty(Queue* queue)
 	{
-		return (queue->first == queue->last && !queue->isFull);
+		return !(queue->size);
 	}
 
+
 	// Insert an element into the queue
-	void Enqueue(Queue* queue, int element)
+	void QEnqueue(Queue* queue, int element)
 	{
-		// First check if the queue is not full
-		if (queue->isFull)
+		if (queue->size == queue->maxSize)
 		{
 			printf("ERROR<Enqueue()>: Queue overflow\n");
 			return;
 		}
 
 		// Insert an element
-		*queue->last = element;
-		MoveLastPointer(&queue);
-
-		// Check if the queue is full now
-		if (queue->first == queue->last)
-			queue->isFull = true;
+		queue->table[queue->last] = element;
+		queue->last = (queue->last+1) % queue->maxSize;
+		queue->size++;
 	}
 
 	// Remove the first element from the queue
-	int Dequeue(Queue* queue)
+	int QDequeue(Queue* queue)
 	{
-		// Check if we have anything to do
-		if (qEmpty(queue))
+		if (QEmpty(queue))
 		{
 			printf("ERROR<Dequeue()>: Queue underflow\n");
 			return 0;
 		}
 
 		// Remove the element
-		int x = *queue->first;
-		MoveFirstPointer(&queue);
-
-		// Now the queue isn't full so...
-		queue->isFull = false;
+		int x = queue->table[queue->first];
+		queue->first = (queue->first+1) % queue->maxSize;
+		queue->size--;
 
 		return x;
 	}
@@ -70,66 +69,23 @@ namespace table
 	// Print the queue one element in line
 	void ShowQueue(Queue* queue)
 	{
-		// Remember original position of the first pointer due to usage of 'MoveFirstPointer()' function
-		int* pointer = queue->first;
-
-		// If there is anything to do...
-		if (!qEmpty(queue))
-			do
-			{
-				printf("%d\n", *queue->first);
-
-				// We have a ready function, it mooves the first pointer, so... 
-				// IMPORTANT: first remember original position of the first pointer
-				MoveFirstPointer(&queue);
-
-			} while (queue->first != queue->last);
-
-			// Restore the first pointer
-			queue->first = pointer;
+		for (int i = 0; i < queue->size; i++)
+		{
+			printf("%d\n", queue->table[(queue->first + i) % queue->maxSize]);
+		}
 	}
 
 	// Reset the queue
-	void qClear(Queue* queue)
+	void QClear(Queue* queue)
 	{
-		queue->first = queue->last = queue->table;
+		queue->first = queue->last = queue->size = 0;
 	}
 
 	// Erase the queue from the memory
-	void qRemove(Queue** queue)
+	void QRemove(Queue** queue)
 	{
 		free((*queue)->table);
 		free(*queue);
 		*queue = NULL;
 	}
-
-#pragma region Helpers
-
-	// Helper functions for moving pointers
-	// This could be done by a separate class 'IteratorQ'
-
-
-	void MoveFirstPointer(Queue** t)
-	{
-		if ((*t)->first == (*t)->table + (*t)->size - 1)
-			// Moving first pointer to the beginning
-			(*t)->first = (*t)->table;
-		else
-			//Casually moving first pointer
-			(*t)->first++;
-	}
-
-	void MoveLastPointer(Queue** t)
-	{
-		if ((*t)->last == (*t)->table + (*t)->size - 1)
-			// Moving last pointer to the beginning
-			(*t)->last = (*t)->table;
-		else
-			//Casually moving last pointer
-			(*t)->last++;
-	}
-
-
-#pragma endregion
-
 }

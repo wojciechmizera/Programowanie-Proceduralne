@@ -1,37 +1,31 @@
-#pragma once			// TODO make sure we can use 'pragma once' ...
-
+#pragma once		
 #include "malloc.h"
 #include "stdio.h"
 
 namespace table
 {
 
-	struct Queue
+	typedef	struct
 	{
 		int* table;
-		int* first;
-		int* last;
+
+		// Read and write indexes
+		int first;
+		int last;
+
+		int maxSize;
 		int size;
-
-		// Auxiliary value that changes inside Enqueu, Dequeue and is checked in qEmpty
-		bool isFull;
-
-		int key;
-	};
+	} Queue;
 
 	Queue* CreateQueue(int size);
 
 	void ShowQueue(Queue* object);
 
-	void Enqueue(Queue* table, int element);
-	int Dequeue(Queue* table);
-	int qEmpty(Queue* queue);
-	void qClear(Queue* queue);
-	void qRemove(Queue** queue);
+	void QEnqueue(Queue* table, int element);
+	int QDequeue(Queue* table);
+	int QEmpty(Queue* queue);
+	void QClear(Queue* queue);
+	void QRemove(Queue** queue);
 
 
-
-	// Helpers
-	void MoveFirstPointer(Queue** t);
-	void MoveLastPointer(Queue** t);
 }

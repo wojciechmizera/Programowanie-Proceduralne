@@ -2,7 +2,7 @@
 #define _ONP
 
 
-#include <stdio.h>				// jest w stosach
+#include <stdio.h>
 #include <math.h>
 #include "StosLiczb.h"
 #include "StosOperatorow.h"
@@ -116,7 +116,7 @@ double GetNum()
 
 	if (c == '.')
 	{
-		double dzielnik = 10;	//double dla dzielenia zmiennoprzecinkowego;
+		double dzielnik = 10;
 		while (IsDigit(c = GetOper()))
 		{
 			res += (c - '0') / dzielnik;
@@ -156,10 +156,8 @@ double Calcul(char oper, double arg1, double arg2)
 		return arg1 * arg2;
 	case '/':
 		if (arg2 <= 1e-10)
-		{
 			printf("dzielenie przez 0\n");
-			//return 0;				// Exception
-		}
+
 		return arg1 / arg2;
 	case '^':
 		return pow(arg1, arg2);

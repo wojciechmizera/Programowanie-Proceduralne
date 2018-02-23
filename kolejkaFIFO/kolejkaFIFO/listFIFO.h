@@ -1,23 +1,25 @@
-#pragma once			// Make sure we can use 'pragma once'...
+#pragma once			
 
 #include <stdio.h>
 #include <malloc.h>
 
 namespace list
 {
-
-	struct Queue
+	typedef struct Qitem
 	{
-		Queue* head;
-		Queue* tail;
-		Queue* next;
-
+		Qitem* next;
 		int key;
-	};
+	} Qitem;
+
+
+	typedef struct
+	{
+		Qitem* head;
+		Qitem* tail;
+	
+	} Queue;
 
 	Queue* CreateQueue();
-
-	void ShowQueue(Queue* list);
 
 	void Enqueue(Queue* list, int element);
 	int Dequeue(Queue* list);
@@ -25,7 +27,6 @@ namespace list
 	void qClear(Queue* list);
 	void qRemove(Queue** list);
 
-
-
-
+	// Helper function, prints actual content in the queue
+	void ShowQueue(Queue* list);
 }

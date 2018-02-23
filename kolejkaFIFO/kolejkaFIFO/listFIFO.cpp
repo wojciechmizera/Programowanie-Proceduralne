@@ -11,27 +11,16 @@ namespace list
 	{
 		Queue* object = (Queue*)calloc(1, sizeof(Queue));
 		// If allocation was successcfull...
-		if (object)
+		if (!object)
 		{
-			object->head = object->tail = object;
-			object->next = NULL;
-			return object;
+			printf("Error<CreateQueue()>: No memory avaliable\n");
+			return NULL;
 		}
-		printf("Error<CreateQueue()>: No memory avaliable\n");
-		return NULL;
-	}
+		object->head = (Qitem*)malloc(sizeof(Qitem));
+		object->tail = object->head;
+		object->head->next = NULL;
 
-	// Prints the queue one element for a line
-	void ShowQueue(Queue * object)
-	{
-		// Create an element to run along the queue
-		Queue* runner = object->head;
-
-		while (runner->next != NULL)
-		{
-			printf("%d\n", runner->key);
-			runner = runner->next;
-		}
+		return object;
 	}
 
 
@@ -39,13 +28,15 @@ namespace list
 	void Enqueue(Queue * object, int element)
 	{
 		// Create a new object
-		Queue* _new = CreateQueue();
+		Qitem* item = (Qitem*)calloc(1, sizeof(*item));
+		if (!item)
+		{
+			printf("ERROR<Enqueue()>: Not enough memory\n");
+		}
 
-		// Do the job with the last element  
-		object->tail->key = element;
-		object->tail->next = _new;
-		object->tail = _new;
-		_new->head = object->head;
+		item->key = element;
+		object->tail->next = item;
+		object->tail = item;
 	}
 
 
@@ -60,10 +51,11 @@ namespace list
 			return 0;
 		}
 
-		int x = list->head->key;
-		Queue* object = list->head;
-
+		int x = list->head->next->key;
+		Qitem* object = list->head;
 		list->head = list->head->next;
+		free(object);
+
 		return x;
 	}
 
@@ -76,20 +68,35 @@ namespace list
 
 
 	// Clear the queue
-	void qClear(Queue * list)
+	void qClear(Queue * object)
 	{
-		while (!qEmpty(list))
+		while (!qEmpty(object))
 		{
-			Dequeue(list);
+			Dequeue(object);
 		}
 	}
 
 
 	// Delete the queue from memory
-	void qRemove(Queue ** list)
+	void qRemove(Queue ** object)
 	{
-		qClear(*list);
-		free(*list);
-		*list = NULL;
+		qClear(*object);
+		free(*object);
+		*object = NULL;
+	}
+
+
+	// Helper function
+	// Prints the queue one element for a line
+	void ShowQueue(Queue * object)
+	{
+		// Create an element to run along the queue
+		Qitem* runner = object->head;
+
+		while (runner->next != NULL)
+		{
+			runner = runner->next;
+			printf("%d\n", runner->key);
+		}
 	}
 }
